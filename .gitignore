@@ -1,4 +1,3 @@
-```text
 # Streamlit secrets
 .streamlit/
 
@@ -22,4 +21,3 @@ env/
 # OS files
 .DS_Store
 Thumbs.db
-```
