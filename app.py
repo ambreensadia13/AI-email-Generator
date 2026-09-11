@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 from google import genai
 
@@ -57,9 +56,7 @@ except Exception:
     st.error("❌ Gemini API key is not configured.")
 
     st.info(
-        "For local development, add your key to "
-        ".streamlit/secrets.toml. "
-        "For Streamlit Cloud, add it through the app's Secrets settings."
+        "Please add GEMINI_API_KEY in Streamlit Secrets."
     )
 
     st.stop()
@@ -71,6 +68,7 @@ except Exception:
 
 @st.cache_resource
 def get_gemini_client():
+
     return genai.Client(
         api_key=GEMINI_API_KEY
     )
@@ -99,7 +97,7 @@ st.divider()
 
 
 # =========================================================
-# EMAIL INPUTS
+# EMAIL DETAILS
 # =========================================================
 
 st.subheader("📝 Email Details")
@@ -169,7 +167,7 @@ additional_details = st.text_area(
 
 
 # =========================================================
-# GENERATE BUTTON
+# GENERATE EMAIL
 # =========================================================
 
 if st.button(
@@ -183,12 +181,16 @@ if st.button(
     # -----------------------------------------------------
 
     if not purpose.strip():
-        st.warning("⚠️ Please enter the purpose of the email.")
+
+        st.warning(
+            "⚠️ Please enter the purpose of the email."
+        )
+
         st.stop()
 
 
     # -----------------------------------------------------
-    # PROMPT
+    # CREATE PROMPT
     # -----------------------------------------------------
 
     prompt = f"""
@@ -217,17 +219,17 @@ ADDITIONAL DETAILS:
 IMPORTANT RULES:
 
 1. Create an appropriate subject line.
-2. Write a natural, polished email.
+2. Write a natural and polished email.
 3. Match the requested tone.
 4. Match the requested length.
 5. Do not invent facts, names, dates, companies, or information.
-6. Do not add explanations before or after the email.
-7. Use a professional greeting.
-8. Use a suitable closing.
+6. Do not explain your answer.
+7. Use an appropriate greeting.
+8. Use an appropriate closing.
 9. Make the email ready to copy and send.
-10. Return ONLY the subject and email.
+10. Return only the subject and email.
 
-Use exactly this structure:
+Use this structure:
 
 Subject: [subject]
 
@@ -236,28 +238,34 @@ Subject: [subject]
 
 
     # -----------------------------------------------------
-    # GENERATE EMAIL
+    # CALL GEMINI
     # -----------------------------------------------------
 
     try:
 
-        with st.spinner("✨ Gemini is writing your email..."):
+        with st.spinner(
+            "✨ Gemini is writing your email..."
+        ):
 
             response = client.models.generate_content(
-                model="gemini-3.7-flash",
+                model="gemini-2.5-flash",
                 contents=prompt
             )
 
 
         # -------------------------------------------------
-        # GET RESPONSE
+        # GET GENERATED EMAIL
         # -------------------------------------------------
 
         generated_email = response.text
 
 
         if not generated_email:
-            st.error("❌ Gemini returned an empty response.")
+
+            st.error(
+                "❌ Gemini returned an empty response."
+            )
+
             st.stop()
 
 
@@ -265,11 +273,15 @@ Subject: [subject]
         # DISPLAY RESULT
         # -------------------------------------------------
 
-        st.success("✅ Email generated successfully!")
+        st.success(
+            "✅ Email generated successfully!"
+        )
 
         st.divider()
 
-        st.subheader("📧 Generated Email")
+        st.subheader(
+            "📧 Generated Email"
+        )
 
 
         edited_email = st.text_area(
@@ -291,15 +303,19 @@ Subject: [subject]
             use_container_width=True
         )
 
+
     except Exception as error:
 
-        st.error("❌ Unable to generate the email.")
+        st.error(
+            "❌ Unable to generate the email."
+        )
 
         st.warning(
-            "Please check your Gemini API key, model access, "
-            "internet connection, and try again."
+            "Please check your Gemini API key and try again."
         )
 
         with st.expander("Technical details"):
-            st.code(str(error))
-```
+
+            st.code(
+                str(error)
+            )
